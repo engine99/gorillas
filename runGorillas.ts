@@ -1,26 +1,23 @@
 import { spawn } from 'node:child_process';
 import assert from 'node:assert';
 import { User32 as User32Sync } from 'win32-api'
-import ffi from 'ffi-napi'
 import { DModel as M,
          DTypes as W,
          DStruct as DS,
-         retrieveStructFromPtrAddress,
-         StructFactory,
          ucsBufferFrom,
          ucsBufferToString,
      } from 'win32-api';
      
-const wffi = import ("windows-ffi");
+import { CaptureScreenshot, GetForegroundWindowHandle, VRect} from 'windows-ffi';
 
 const user32 = User32Sync.load();
 const child = spawn("AutoIt3.exe", [ "/ErrorStdOut", "C:\\dev\\gorillas\\runGorillas.au3"]);
 
 
+setTimeout(connectGame, 8000);
 
-
-function connectGame(wffi: any) {
-  setTimeout( () => {
+function connectGame() {
+  
     console.log("spawned", child.pid);
     
     const hWnd = user32.FindWindowExW(0, 0, ucsBufferFrom("SDL_app\0"), null)
@@ -38,17 +35,15 @@ function connectGame(wffi: any) {
     
     
     // First capture a screenshot of a section of the screen.
-    const screenshot = wffi.CaptureScreenshot({
-      windowHandle: wffi.GetForegroundWindowHandle(), // comment to screenshot all windows
-      rectToCapture: new wffi.VRect(0, 0, 800, 600),
+    const screenshot = CaptureScreenshot({
+      windowHandle: GetForegroundWindowHandle(), // comment to screenshot all windows
+      rectToCapture: new VRect(0, 0, 800, 600),
     });
     
-    console.log(screenshot.buffer.toString());
+    //console.log(screenshot.buffer.toString());
     
     console.log("Killing");
-    child.kill();
-  });
+    user32.CloseWindow(hWnd);
+    console.log(child.kill());
+
 }
-
-
-wffi.then((x) => connectGame(x));

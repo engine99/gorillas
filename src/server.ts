@@ -8,22 +8,25 @@ import path from 'path';
 import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
 import logger from 'jet-logger';
-
+import crypto from 'node:crypto';
 import 'express-async-errors';
 
-import BaseRouter from '@src/routes/api';
-import Paths from '@src/routes/constants/Paths';
+import { engine } from 'express-handlebars';
 
-import EnvVars from '@src/constants/EnvVars';
-import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
-import { NodeEnvs } from '@src/constants/misc';
-import { RouteError } from '@src/other/classes';
+import EnvVars from './constants/EnvVars.js';
+import HttpStatusCodes from './constants/HttpStatusCodes.js';
+
+import { NodeEnvs } from './constants/misc.js';
+import { GameSession, Player } from './GameSession.js';
+import expressWs from 'express-ws';
+
 
 
 // **** Variables **** //
 
-const app = express();
+const gorillas = new Map<string, GameSession>();
+const app = expressWs(express()).app;
 
 
 // **** Setup **** //
@@ -43,8 +46,41 @@ if (EnvVars.NodeEnv === NodeEnvs.Production) {
   app.use(helmet());
 }
 
-// Add APIs, must be after middleware
-app.use(Paths.Base, BaseRouter);
+app.get('/gorilist',(req, res, next) => {
+  res.write(Object.keys(gorillas));
+});
+
+app.get('/',(req, res, next) => {
+  const id = crypto.randomUUID();
+  
+  const p1cookie = crypto.randomUUID();
+
+  const s = new GameSession();
+  s.oid = id;
+
+  const p = new Player();
+  p.cookie = p1cookie;
+  s.player1 = p;
+
+  s.runGame();
+  gorillas.set(id, s);
+
+  res.cookie('player', p1cookie);
+  res.redirect(id);
+});
+
+app.get('/:world', (req, res, next) => {
+  res.render('gorillas', {'layout':false});
+});
+
+app.ws('/:world', (ws, req, next) => {
+
+  console.log(req.cookies);
+
+  ws.on('message', (data) => {
+
+  });
+});
 
 // Add error handler
 app.use((
@@ -55,12 +91,9 @@ app.use((
   next: NextFunction,
 ) => {
   if (EnvVars.NodeEnv !== NodeEnvs.Test) {
-    logger.err(err, true);
+    logger.default.err(err, true);
   }
   let status = HttpStatusCodes.BAD_REQUEST;
-  if (err instanceof RouteError) {
-    status = err.status;
-  }
   return res.status(status).json({ error: err.message });
 });
 
@@ -68,24 +101,13 @@ app.use((
 // ** Front-End Content ** //
 
 // Set views directory (html)
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
+app.set('views', 'src/views');
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
 
 // Set static directory (js and css).
-const staticDir = path.join(__dirname, 'public');
-app.use(express.static(staticDir));
-
-// Nav to users pg by default
-app.get('/', (_: Request, res: Response) => {
-  return res.redirect('/users');
-});
-
-// Redirect to login if not logged in.
-app.get('/users', (_: Request, res: Response) => {
-  return res.sendFile('users.html', { root: viewsDir });
-});
+app.use(express.static('public'));
 
 
 // **** Export default **** //
-
 export default app;
