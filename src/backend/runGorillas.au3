@@ -10,7 +10,7 @@ WinActivate($hWnd)
 
 WinWaitActive("[REGEXPTITLE:(DOSBox.*DOSBOX)]")
 
-Send("MOUNT C: C:\dev\gorillas{ENTER}")
+Send("MOUNT C: .\dist\backend{ENTER}")
 
 Sleep(1000)
 
