@@ -7,60 +7,49 @@ import { DModel as M,
          ucsBufferFrom,
          ucsBufferToString,
      } from 'win32-api';
-     
+import { HWND } from 'win32-def';
+
 import { CaptureScreenshot, GetForegroundWindowHandle, VRect} from 'windows-ffi';
 
-export class runGorillas {
-  
-  private child: any;
-  user32 = User32Sync.load();
 
-  constructor() {
-    
-  }
-  
-  launchGame() {
-    
-    this.child = spawn("AutoIt3.exe", [ "/ErrorStdOut", ".\\dist\\backend\\runGorillas.au3"]);
-    this.child.stderr.setEncoding('utf8');
-    this.child.stderr.on('data', console.log);
-    this.child.stderr.on('error', console.log);
-    this.child.stdout.setEncoding('utf8');
-    this.child.stdout.on('data', console.log);
-    this.child.stdout.on('error', console.log);
-    setTimeout(this.connectGame, 8000);
+export function runGorillas(): Promise<HWND> {
+  return new Promise((res, rej) => {
 
-  }
-
-  connectGame() {
-    
-      console.log("spawned", this.child.pid);
-      
-      const hWnd = this.user32.FindWindowExW(0, 0, ucsBufferFrom("SDL_app\0"), null)
+    const child = spawn("AutoIt3.exe", [ "/ErrorStdOut", ".\\dist\\backend\\runGorillas.au3"]);
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', console.log);
+    child.stderr.on('error', console.log);
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', console.log);
+    child.stdout.on('error', console.log);
+    setTimeout(() => {
+      const user32 = User32Sync.load();
+      const hWnd = user32.FindWindowExW(0, 0, ucsBufferFrom("SDL_app\0"), null)
       
       console.log("Found", hWnd);
       assert((typeof hWnd === 'string' && hWnd.length > 0) || hWnd != null, 'found no SDL_app window')
       
       const len = 1028;
       const buf = Buffer.alloc(len * 2)
-      this.user32.GetWindowTextW(hWnd, buf, len);
+      user32.GetWindowTextW(hWnd, buf, len);
       
       const windowTitle = ucsBufferToString(buf, len);
       
       assert(windowTitle.startsWith("DOSBox") && windowTitle.endsWith("QB"), 'SDL_app window is not dosbox QB:'+windowTitle);
       
-      
       // First capture a screenshot of a section of the screen.
       const screenshot = CaptureScreenshot({
-        windowHandle: GetForegroundWindowHandle(), // comment to screenshot all windows
+        windowHandle: hWnd.valueOf() as any, // comment to screenshot all windows
         rectToCapture: new VRect(0, 0, 800, 600),
       });
       
       //console.log(screenshot.buffer.toString());
       
-      console.log("Killing");
-      this.user32.CloseWindow(hWnd);
-      console.log(this.child.kill());
+      // console.log("Killing");
+      // user32.CloseWindow(hWnd);
+      res(hWnd);
+      
+    }, 8000);
+  });    
 
-  }
 }

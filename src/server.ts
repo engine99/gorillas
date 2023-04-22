@@ -10,7 +10,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import logger from 'jet-logger';
 import crypto from 'node:crypto';
 import 'express-async-errors';
+import { Server } from 'http';
 
+import { parse } from 'cookie';
 import { engine } from 'express-handlebars';
 
 
@@ -19,14 +21,15 @@ import HttpStatusCodes from './constants/HttpStatusCodes.js';
 
 import { NodeEnvs } from './constants/misc.js';
 import { GameSession, Player } from './GameSession.js';
-import expressWs from 'express-ws';
-
+import { WebSocketServer } from 'ws';
 
 
 // **** Variables **** //
 
 const gorillas = new Map<string, GameSession>();
-const app = expressWs(express()).app;
+const app = express();
+const server = new Server(app);
+const wsapp = new WebSocketServer({server});
 
 
 // **** Setup **** //
@@ -60,11 +63,10 @@ app.get('/',(req, res, next) => {
 
   const p = new Player();
   p.cookie = p1cookie;
-  s.player1 = p;
+  s.players.push(p);
 
-  s.runGame();
   gorillas.set(id, s);
-
+  s.startGameAndStream();
   res.cookie('player', p1cookie);
   res.redirect(id);
 });
@@ -73,14 +75,35 @@ app.get('/:world', (req, res, next) => {
   res.render('gorillas', {'layout':false});
 });
 
-app.ws('/:world', (ws, req, next) => {
+wsapp.on('connection', (ws, req) => {
+  
+  let path = req.url;
+  if (path?.match(/\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/)) {
+    let id = path.substring(1);
+    let game = gorillas.get(id);
+    if (game) {
+      console.log("game exists:"+ path);
+      console.log(req.headers['cookie']);
 
-  console.log(req.cookies);
+      if (!req.headers.cookie) {
+        console.log("no cookie");
+        return;
+      }
 
-  ws.on('message', (data) => {
+      let pid = parse(req.headers.cookie).player;
+      
+      game.players.filter(s => s.cookie === pid).forEach((x) => {x.ws = ws});
+      ws.on('message', (data, isBinary) => {
+        console.log(data.toString());
+      })
 
-  });
-});
+    } else {
+      console.log("funny game id:"+ path);
+    }
+  } else {
+    console.log("bad connection" + path);
+  }
+})
 
 // Add error handler
 app.use((
@@ -110,4 +133,4 @@ app.use(express.static('public'));
 
 
 // **** Export default **** //
-export default app;
+export default server;

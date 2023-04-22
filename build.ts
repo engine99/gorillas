@@ -15,7 +15,7 @@ import childProcess from 'child_process';
     // Remove current build
     await remove('./dist/');
     // Copy front-end files
-    await copy('./src/public', './dist/public');
+    await copy('./public', './dist/public');
     await copy('./src/views', './dist/views');
     await copy('./src/backend', './dist/backend');
     // Copy back-end files
