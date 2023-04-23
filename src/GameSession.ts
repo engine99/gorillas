@@ -41,7 +41,15 @@ export class GameSession {
             1000);
         });
     }
+
+    public sendKeys(input: string) {
+        if (this.handle) {
+            
+        }
+    }
     
     public oid: string = '';
     public players: Player[] = [];
+    handle: any;
+
 }

@@ -46,6 +46,7 @@
     "jimp": "^0.22.7",
     "jsonfile": "^6.1.0",
     "jsonwebtoken": "^9.0.0",
+    "keycode": "^2.2.1",
     "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
     "ts-command-line-args": "^2.4.2",

@@ -18,7 +18,12 @@ var message = document.getElementById('message');
 
 document.getElementsByTagName('body')[0].addEventListener('keydown', (e)=>{
     console.log(e.key);
-    socket.send("keydown "+e.key);
+
+    if (e.key.match(/(Backspace|Enter|^[\w. ]$)/)) {
+        socket.send("keydown "+e.key);
+    } else {
+        console.log("illegal key" + e.key)
+    }
 })
 
 
