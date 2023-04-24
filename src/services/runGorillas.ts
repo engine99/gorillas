@@ -14,11 +14,7 @@ import { HWND } from 'win32-def';
 
 import { CaptureScreenshot, GetForegroundWindowHandle, VRect} from 'windows-ffi';
 
-export function sendKeys(handle: M.HANDLE, input: string) {
-  const user32 = User32Sync.load();
- // const hWnd = user32.SendMessageW(handle, 0x0102, keycode(input), null);
-     
-}
+
 
 export function runGorillas(): Promise<HWND> {
   return new Promise((res, rej) => {

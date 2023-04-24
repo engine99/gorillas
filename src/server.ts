@@ -99,11 +99,9 @@ wsapp.on('connection', (ws, req) => {
         if (mess[0] === 'keydown') {
           let key = mess[1];
           if (key.match(/(Backspace|Enter|^[\w. ]$)/)) {
-            console.log(data.toString());
-          } else {
-            console.log(key);
             game?.sendKeys(key);
-            
+          } else {
+            console.log('Bad key ' + key);
           }
         }
       })
