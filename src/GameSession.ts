@@ -1,10 +1,4 @@
 import { runGorillas } from './services/runGorillas.js'
-import { spawn } from 'node:child_process';
-import { start } from 'node:repl';
-import { DModel as M,
-    DTypes as W,
-    DStruct as DS,
-    User32 as User32Sync} from 'win32-api';
 import { HWND } from 'win32-def';
 import Jimp from 'jimp';
 import { WebSocket } from 'ws';
@@ -13,11 +7,8 @@ import FFI from 'ffi-napi';
 import ref from 'ref-napi';
 
 import { CaptureScreenshot, GetForegroundWindowHandle, VRect, ffi } from 'windows-ffi';
-import { K } from 'node_modules/win32-api/dist/index.cjs';
+import { exec, spawn } from 'node:child_process';
 
-import UnionType from 'ref-union-napi';
-
-import StructType from 'ref-struct-napi';
 
 export class Player {
     public ip: string = '----';
@@ -27,47 +18,6 @@ export class Player {
 }
 
 
-
-const user32 = new FFI.Library('user32.dll', {
-    // UINT SendInput(
-    //   _In_ UINT cInputs,                     // number of input in the array
-    //   _In_reads_(cInputs) LPINPUT pInputs,  // array of inputs
-    //   _In_ int cbSize);                      // sizeof(INPUT)
-    'SendInput': ['uint32', ['int32', 'pointer', 'int32']],
-  })    
-
-  const KEYBDINPUT = StructType({
-    vk: M.Def.uint16,//'uint16',
-    scan: M.Def.uint16,//'uint16',
-    flags: M.Def.uint32, //'uint32',
-    time: M.Def.uint32,//'uint32',
-    extraInfo: M.Def.ptr
-  })
-
-  const MOUSEINPUT = StructType({
-    dx: M.Def.int32,//'int32',
-    dy: M.Def.int32,//'int32',
-    mouseData: M.Def.uint32,//'uint32',
-    flags: M.Def.uint32,//'uint32',
-    time: M.Def.uint32,//'uint32',
-    extraInfo: M.Def.ptr
-  })
-  
-  const HARDWAREINPUT = StructType({
-    msg: M.Def.uint32,//'uint32',
-    paramL: M.Def.uint16,//'uint16',
-    paramH: M.Def.uint16,//'uint16',
-  })
-
-  const INPUT_UNION = UnionType({
-    mi: MOUSEINPUT,
-    ki: KEYBDINPUT,
-    hi: HARDWAREINPUT,
-  })
-  const INPUT = StructType({
-    type: M.Def.uint32,//'uint32',
-    union: INPUT_UNION,
-  })
 
 export class GameSession {
 
@@ -103,12 +53,15 @@ export class GameSession {
             // console.log(keycode(input));
             // user32.SetForegroundWindow(this.handle);
             // console.log(user32.PostMessageW(this.handle, 0x0100, keycode.codes.a, 0));
+            const child = spawn("AutoIt3.exe", [ "/ErrorStdOut", ".\\dist\\backend\\runGorillas.au3"]);
+    
+            child.stderr.setEncoding('utf8');
+            child.stderr.on('data', console.log);
+            child.stderr.on('error', console.log);
 
-            const keyDownKeyboardInput = KEYBDINPUT({vk: 0, extraInfo: ref.NULL_POINTER, time: 0, scan: 0x1E, flags: 0x0008})
-            
-            const keyDownInput = INPUT({type: 1, union: INPUT_UNION({ki: keyDownKeyboardInput})})
-            user32.SendInput(1, keyDownInput.ref(), INPUT.size)
-
+            child.stdout.setEncoding('utf8');
+            child.stdout.on('data', console.log);
+            child.stdout.on('error', console.log);
 
         }
     }
