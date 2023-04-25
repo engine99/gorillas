@@ -49,19 +49,19 @@ export class GameSession {
 
     public sendKeys(input: string) {
         if (this.handle) {
-            // const user32 = User32Sync.load();
-            // console.log(keycode(input));
-            // user32.SetForegroundWindow(this.handle);
-            // console.log(user32.PostMessageW(this.handle, 0x0100, keycode.codes.a, 0));
-            const child = spawn("AutoIt3.exe", [ "/ErrorStdOut", ".\\dist\\backend\\runGorillas.au3"]);
-    
-            child.stderr.setEncoding('utf8');
-            child.stderr.on('data', console.log);
-            child.stderr.on('error', console.log);
 
-            child.stdout.setEncoding('utf8');
-            child.stdout.on('data', console.log);
-            child.stdout.on('error', console.log);
+            if (input.match(/^\w{1}$/)) {
+                const command = `Global $a = WinActivate(HWnd('${this.handle}')) & Send('${input}')`;
+                console.log(command);
+                const child = spawn("AutoIt3.exe", 
+                [ 
+                    "/ErrorStdOut", 
+                    "/AutoIt3ExecuteLine",
+                    command
+                ]);
+            } else {
+                console.log("Illegal Input:" + input);
+            }
 
         }
     }
