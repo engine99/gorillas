@@ -10,8 +10,8 @@ WinActivate($hWnd)
 
 Local $hGame = WinWaitActive("[REGEXPTITLE:(DOSBox.*DOSBOX)]")
 
-#Send("MOUNT C: .\dist\backend{ENTER}")
-Send("MOUNT C: C:\dev\gorillas\dist\backend{ENTER}")
+Send("MOUNT C: .\dist\backend{ENTER}")
+#Send("MOUNT C: C:\dev\gorillas\dist\backend{ENTER}")
 
 Sleep(1000)
 
