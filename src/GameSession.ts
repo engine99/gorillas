@@ -29,7 +29,7 @@ export class GameSession {
                     windowHandle: hWnd.valueOf() as any, // comment to screenshot all windows
 
                 });
-                new Jimp(screenshot.width, screenshot.width, (err, image) => {
+                new Jimp(screenshot.width, screenshot.height, (err, image) => {
                     for (let x = 0; x < screenshot.width; x++) {
                         for (let y = 0; y < screenshot.height; y++) {
                             image.setPixelColour(Jimp.cssColorToHex(screenshot.GetPixel(x,y).ToHex_RGB()), x, y);

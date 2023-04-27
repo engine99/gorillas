@@ -1,10 +1,10 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-size: cover;
-  background-repeat: no-repeat;
-
+  background: black
 }
 
-a {
-  color: #00B7FF;
+.theimg {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
 }
