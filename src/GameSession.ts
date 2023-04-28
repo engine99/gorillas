@@ -1,14 +1,8 @@
 import { runGorillas } from './services/runGorillas.js'
-import { HWND } from 'win32-def';
 import Jimp from 'jimp';
 import { WebSocket } from 'ws';
-import keycode from 'keycode';
-import FFI from 'ffi-napi';
-import ref from 'ref-napi';
-
-import { CaptureScreenshot, GetForegroundWindowHandle, VRect, ffi } from 'windows-ffi';
-import { exec, spawn } from 'node:child_process';
-
+import { CaptureScreenshot } from 'windows-ffi';
+import { spawn } from 'node:child_process';
 
 export class Player {
     public ip: string = '----';
@@ -17,10 +11,7 @@ export class Player {
     constructor() {}
 }
 
-
-
 export class GameSession {
-
     startGameAndStream() {
         runGorillas().then((hWnd) => {
             this.handle = hWnd;
@@ -50,7 +41,7 @@ export class GameSession {
     public sendKeys(input: string) {
         if (this.handle) {
 
-            if (input.match(/^\w{1}$/)) {
+            if (input.match(/(Backspace|Enter|^[\w. ]$)/)) {
                 const command = `Global $a = WinActivate(HWnd('${this.handle}')) & Send('${input}')`;
                 console.log(command);
                 const child = spawn("AutoIt3.exe", 
