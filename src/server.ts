@@ -95,7 +95,7 @@ wsapp.on('connection', (ws, req) => {
       game.players.filter(s => s.cookie === pid).forEach((x) => {x.ws = ws});
       
       ws.on('message', (data, isBinary) => {
-        let mess = data.toString().split(' ');
+        let mess = data.toString().split(':');
         if (mess[0] === 'keydown') {
           let key = mess[1];
           if (key.match(/(Backspace|Enter|^[\w. ]$)/)) {
