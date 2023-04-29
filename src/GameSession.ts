@@ -42,7 +42,13 @@ export class GameSession {
         if (this.handle) {
 
             if (input.match(/(Backspace|Enter|^[\w. ]$)/)) {
-                const command = `Global $a = WinActivate(HWnd('${this.handle}')) & Send('${input}')`;
+                let decoded = input;
+                if (decoded === "Enter") {
+                    decoded = "\n";
+                } else if (decoded === "Backspace") {
+                    decoded = "{BS}"
+                }
+                const command = `Global $a = WinActivate(HWnd('${this.handle}')) & Send('${decoded}')`;
                 console.log(command);
                 const child = spawn("AutoIt3.exe", 
                 [ 
