@@ -1,5 +1,5 @@
 
-var socket = new WebSocket(`ws://${location.host}${location.pathname}`);
+var socket = new WebSocket(`wss://${location.host}${location.pathname}`);
 socket.onopen = (e) => {
     console.log('new connection!' + e);
 }
@@ -25,5 +25,11 @@ document.getElementsByTagName('body')[0].addEventListener('keydown', (e)=>{
         console.log("illegal key" + e.key)
     }
 })
+
+document.getElementsByTagName('body')[0].addEventListener('touchstart', (e)=>{
+    
+    document.getElementById('theinput').focus();
+})
+
 
 

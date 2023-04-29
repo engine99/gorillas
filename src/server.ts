@@ -56,22 +56,36 @@ app.get('/gorilist',(req, res, next) => {
 app.get('/',(req, res, next) => {
   const id = crypto.randomUUID();
   
-  const p1cookie = crypto.randomUUID();
-
   const s = new GameSession();
   s.oid = id;
 
-  const p = new Player();
-  p.cookie = p1cookie;
-  s.players.push(p);
-
   gorillas.set(id, s);
   s.startGameAndStream();
-  res.cookie('player', p1cookie);
   res.redirect(id);
 });
 
-app.get('/:world', (req, res, next) => {
+app.get('/:world(\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$)', (req, res, next) => {
+  const w = req.params.world;
+  const g = gorillas.get(w);
+  if (!g) {
+    throw "Strange world";
+  }
+
+  console.log("world"+req.params.world);
+  console.log("cookie at world:"+req.headers.cookie);
+  const playerCookie = req.headers.cookie?.match(/^player=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/);
+  
+  if (playerCookie && playerCookie[0] && g.players.find(x => x.cookie === playerCookie[0])) {
+    console.debug("known player")!
+  } else {
+    console.debug("new player to this game " + req.params.world);
+    const subsequentPlayerCookie = crypto.randomUUID();
+    const p = new Player();
+    p.cookie = subsequentPlayerCookie;
+    g.players.push(p);
+    res.cookie('player', subsequentPlayerCookie);
+  }
+
   res.render('gorillas', {'layout':false});
 });
 

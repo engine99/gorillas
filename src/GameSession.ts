@@ -34,7 +34,7 @@ export class GameSession {
                     });
                 });
             },
-            1000);
+            500);
         });
     }
 
