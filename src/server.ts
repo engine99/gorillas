@@ -54,6 +54,7 @@ app.get('/gorilist',(req, res, next) => {
 });
 
 app.get('/',(req, res, next) => {
+  console.log(req.path);
   const id = crypto.randomUUID();
   
   const s = new GameSession();

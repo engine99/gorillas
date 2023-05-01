@@ -23,7 +23,8 @@ export class GameSession {
                 new Jimp(screenshot.width, screenshot.height, (err, image) => {
                     for (let x = 0; x < screenshot.width; x++) {
                         for (let y = 0; y < screenshot.height; y++) {
-                            image.setPixelColour(Jimp.cssColorToHex(screenshot.GetPixel(x,y).ToHex_RGB()), x, y);
+                            const pix = screenshot.GetPixel(x,y);
+                            image.setPixelColour((((((pix.red * 256)+pix.green)*256)+pix.blue)*256) + 255, x, y);
                         }
                     }
                     // this image is 256 x 256, every pixel is set to 0x00000000
@@ -34,7 +35,7 @@ export class GameSession {
                     });
                 });
             },
-            500);
+            50);
         });
     }
 
