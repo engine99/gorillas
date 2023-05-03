@@ -57,7 +57,7 @@ export function runGorillas(): Promise<HWND> {
       // user32.CloseWindow(hWnd);
       res(hWnd);
       
-    }, 5000);
+    }, 6000);
   });    
 
 }

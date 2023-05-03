@@ -1,5 +1,5 @@
 
-var socket = new WebSocket(`ws://${location.host}${location.pathname}`);
+var socket = new WebSocket(`wss://${location.host}${location.pathname}`);
 socket.onopen = (e) => {
     console.log('new connection!' + e);
 }
