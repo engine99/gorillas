@@ -18,15 +18,14 @@ Sleep(1000)
 WinWaitActive($hGame)
 Send("C:\{ENTER}QB.exe gorilla.bas{ENTER}")
 
-Sleep(1000)
+#Sleep(1000)
+#WinWaitActive($hGame)
+#Send("{ESC}")
 
-WinWaitActive($hGame)
-Send("{ESC}")
-
-Sleep(3000)
+Sleep(2000)
 
 WinWaitActive($hGame)
 Send("{F5}")
 
+ConsoleWrite("AutoIt3 has initialized the game in window ")
 ConsoleWrite($hGame)
-ConsoleWrite("done")

@@ -54,7 +54,7 @@ app.get('/gorilist',(req, res, next) => {
 });
 
 app.get('/',(req, res, next) => {
-  console.log(Object.entries(req).flat());
+  //console.log(Object.entries(req).flat());
   const id = crypto.randomUUID();
   
   const s = new GameSession();
@@ -121,6 +121,12 @@ wsapp.on('connection', (ws, req) => {
         }
       })
 
+      ws.on("close", (code, reason)=>{
+        if (game) {
+          //game.players = game.players.filter( player => {player.cookie !== pid});
+          console.log("someone closing");
+        }
+      });
     } else {
       console.log("funny game id:"+ path);
     }

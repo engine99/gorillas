@@ -31,7 +31,9 @@ export function runGorillas(): Promise<HWND> {
       const hWnd = user32.FindWindowExW(0, 0, ucsBufferFrom("SDL_app\0"), null)
       
       console.log("Found", hWnd);
-      assert((typeof hWnd === 'string' && hWnd.length > 0) || hWnd != null, 'found no SDL_app window')
+      if (!((typeof hWnd === 'string' && hWnd.length > 0) || hWnd != null)) {
+        rej('found no SDL_app window');
+      }
       
       const len = 1028;
       const buf = Buffer.alloc(len * 2)
@@ -39,7 +41,9 @@ export function runGorillas(): Promise<HWND> {
       
       const windowTitle = ucsBufferToString(buf, len);
       
-      assert(windowTitle.startsWith("DOSBox") && windowTitle.endsWith("QB"), 'SDL_app window is not dosbox QB:'+windowTitle);
+      if (!(windowTitle.startsWith("DOSBox") && windowTitle.endsWith("QB"))) {
+        rej('SDL_app window is not dosbox QB:'+windowTitle);            
+      }
       
       // First capture a screenshot of a section of the screen.
       const screenshot = CaptureScreenshot({
@@ -53,7 +57,7 @@ export function runGorillas(): Promise<HWND> {
       // user32.CloseWindow(hWnd);
       res(hWnd);
       
-    }, 8000);
+    }, 5000);
   });    
 
 }

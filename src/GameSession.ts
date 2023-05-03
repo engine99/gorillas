@@ -12,6 +12,11 @@ export class Player {
 }
 
 export class GameSession {
+    
+    public oid: string = '';
+    public players: Player[] = [];
+    handle: any;
+
     startGameAndStream() {
         runGorillas().then((hWnd) => {
             this.handle = hWnd;
@@ -29,13 +34,17 @@ export class GameSession {
                     }
                     // this image is 256 x 256, every pixel is set to 0x00000000
                     image.getBuffer(Jimp.MIME_PNG, (err, result)=>{
+                        if (this.players.length == 0) {
+                            console.log(`No players left in game ${this.oid}, closing`);
+                            //clearInterval(poll);
+                        }
                         this.players.forEach(p => {
                             p.ws?.send(result);
                         })
                     });
                 });
             },
-            50);
+            100);
         });
     }
 
@@ -63,8 +72,5 @@ export class GameSession {
 
         }
     }
-    public oid: string = '';
-    public players: Player[] = [];
-    handle: any;
 
 }
