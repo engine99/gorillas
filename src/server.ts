@@ -72,14 +72,12 @@ app.get('/:world(\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$)', (req, res, next) => {
     throw "Strange world";
   }
 
-  console.log("world"+req.params.world);
-  console.log("cookie at world:"+req.headers.cookie);
-  const playerCookie = req.headers.cookie?.match(/^player=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/);
-  
-  if (playerCookie && playerCookie[0] && g.players.find(x => x.cookie === playerCookie[0])) {
-    console.debug("known player")!
+  let pid = req.headers.cookie && parse(req.headers.cookie).player;
+ 
+  if (pid && g.players.find(x => x.cookie === pid)) {
+    console.debug('Server: Known player visiting')!
   } else {
-    console.debug("new player to this game " + req.params.world);
+    console.debug("Server: new player to this game " + req.params.world);
     const subsequentPlayerCookie = crypto.randomUUID();
     const p = new Player();
     p.cookie = subsequentPlayerCookie;
@@ -123,15 +121,14 @@ wsapp.on('connection', (ws, req) => {
 
       ws.on("close", (code, reason)=>{
         if (game) {
-          //game.players = game.players.filter( player => {player.cookie !== pid});
-          console.log("someone closing");
+          console.log(`Server: someone closing ${code} ${reason}`);
         }
       });
     } else {
-      console.log("funny game id:"+ path);
+      console.log("Server: funny game id: "+ path);
     }
   } else {
-    console.log("bad connection" + path);
+    console.log("Server: bad connection to" + path);
   }
 })
 
