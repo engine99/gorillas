@@ -13,7 +13,7 @@ Local $hGame = WinWaitActive("[REGEXPTITLE:(DOSBox.*DOSBOX)]")
 Send("MOUNT C: .\dist\backend{ENTER}")
 #Send("MOUNT C: C:\dev\gorillas\dist\backend{ENTER}")
 
-Sleep(1000)
+Sleep(2000)
 
 WinWaitActive($hGame)
 Send("C:\{ENTER}QB.exe gorilla.bas{ENTER}")
@@ -22,7 +22,7 @@ Send("C:\{ENTER}QB.exe gorilla.bas{ENTER}")
 #WinWaitActive($hGame)
 #Send("{ESC}")
 
-Sleep(2000)
+Sleep(3000)
 
 WinWaitActive($hGame)
 Send("{F5}")
