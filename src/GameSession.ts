@@ -44,8 +44,8 @@ export class GameSession {
 
             if (input.match(/(Backspace|Enter|^[\w. ]$)/)) {
                 let decoded = input;
-                if (decoded === "Enter") {
-                    decoded = "\n";
+                if (decoded === "Enter" || decoded.endsWith("\n")) {
+                    decoded = "{Enter}";
                 } else if (decoded === "Backspace") {
                     decoded = "{BS}"
                 }
