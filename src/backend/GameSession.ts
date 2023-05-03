@@ -45,6 +45,8 @@ export class GameSession {
                 });
             },
             100);
+        }).catch(e=>{
+            console.log(`Session: init failed: ${e}`)
         });
     }
 

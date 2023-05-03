@@ -151,12 +151,12 @@ app.use((
 // ** Front-End Content ** //
 
 // Set views directory (html)
-app.set('views', 'src/views');
+app.set('views', 'src/backend/views');
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 
 // Set static directory (js and css).
-app.use(express.static('public'));
+app.use(express.static('src/frontend/public'));
 
 
 // **** Export default **** //
