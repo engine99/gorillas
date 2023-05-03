@@ -6,3 +6,18 @@ Requirements:
 2) AutoIt3 https://www.autoitscript.com/site/autoit/downloads/
 
 Gorillas.bas is Copyright 1990 Microsoft.
+
+Specs:
+Single-environment
+Express server
+Typescript
+
+To start:
+npm run build
+npm run dev
+npm run start
+
+Notes:
+Todo Game windows & processes should close after timeout.
+
+If running on VM, need an open RDP to the VM
