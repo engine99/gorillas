@@ -1,5 +1,6 @@
 
-var socket = new WebSocket(`wss://${location.host}${location.pathname}`);
+$(function(){
+var socket = new WebSocket(`ws://${location.host}${location.pathname}`);
 socket.onopen = (e) => {
     console.log('new connection!' + e);
 }
@@ -16,7 +17,7 @@ socket.onmessage = (e) => {
 
 var message = document.getElementById('message');
 
-document.getElementsByTagName('body')[0].addEventListener('keydown', (e)=>{
+$('body').on("keydown", (e)=>{
     console.log(e.key);
 
     if (e.key.match(/(Backspace|Enter|^[\w. ]$)/)) {
@@ -26,10 +27,14 @@ document.getElementsByTagName('body')[0].addEventListener('keydown', (e)=>{
     }
 })
 
-document.getElementsByTagName('body')[0].addEventListener('touchstart', (e)=>{
+$('body').on('touchstart', (e)=>{
     
     document.getElementById('theinput').focus();
 })
 
+$('#theimg').on("contextmenu", (e) => {
+    e.preventDefault();
+});
 
+});
 
